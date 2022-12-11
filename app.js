@@ -1,14 +1,20 @@
 const express = require('express');
-const fs = require('fs');
+// const fs = require('fs');
 const morgan = require('morgan');
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
 
 const app = express();
+
 // 1) MIDDLEWARS
+console.log(process.env.NODE_ENV);
+if (process.env.NODE_ENV === 'development') {
+  app.use(morgan('dev'));
+}
+
 // these middlewares we want to apply for all of the routes
-app.use(express.json()); // middleware (middle of the request and the response)
-app.use(morgan('dev'));
+app.use(express.json()); // middleware (middle of the request and the response
+app.use(express.static(`${__dirname}/public`));
 
 app.use((req, res, next) => {
   console.log('Hello from the middleware ');
@@ -23,13 +29,7 @@ app.use((req, res, next) => {
 
 // 3) ROUTES (this middlewares we want to apply the tourRouter and userRouter )
 app.use('/api/v1/tours', tourRouter);
-app.use('/api/v1/tours', userRouter);
-
-// 4) START SERVER
-const port = 3000;
-app.listen(port, () => {
-  console.log(`Àpp running on port ${port}...`);
-});
+app.use('/api/v1/users', userRouter);
 
 // app.get('/1', (req, res) => {
 //   // use status cpde  example 200for okay
@@ -82,3 +82,5 @@ app.listen(port, () => {
 //   .get(getUser)
 //   .patch(updateUser)
 //   .delete(deleteUser);
+
+module.exports = app;
