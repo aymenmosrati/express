@@ -312,14 +312,14 @@ exports.getMonthlyPlan = async (req, res) => {
       },
       // second stage
       // condition
-      // {
-      //   $match: {
-      //     startDates: {
-      //       $gte: new Date(`${year}-01-01`),
-      //       $lte: new Date(`${year}-12-31`),
-      //     },
-      //   },
-      // },
+      {
+        $match: {
+          startDates: {
+            $gte: new Date(`${year}-01-01`),
+            $lte: new Date(`${year}-12-31`),
+          },
+        },
+      },
       // Third Stage
       {
         $group: {
@@ -329,16 +329,16 @@ exports.getMonthlyPlan = async (req, res) => {
         },
       },
       // add Keys : value in documents
-      // {
-      //   $addFields: { month: '$_id' },
-      // },
-      // {
-      //   $sort: { nupmTourStarts: -1 },
-      // },
-      // // limit the object json returned
-      // {
-      //   $limit: 12,
-      // },
+      {
+        $addFields: { month: '$_id' },
+      },
+      {
+        $sort: { nupmTourStarts: -1 },
+      },
+      // limit the object json returned
+      {
+        $limit: 12,
+      },
     ]);
     res.status(200).json({
       status: 'success',
