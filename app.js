@@ -1,18 +1,29 @@
 const express = require('express');
 // const fs = require('fs');
 const morgan = require('morgan');
+const AppError = require('./utils/appError');
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
+const reviewRouter = require('./routes/reviewRoutes');
 
 const app = express();
 
-//start v 149
-
-// 1) MIDDLEWARS
-console.log(process.env.NODE_ENV);
+// 1) GLOBAL MIDDLEWARES
+// sET SECURITY http HEASERS
+// app.use(helmet());
+// console.log(process.env.NODE_ENV);
+// development logging
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
+
+// // Limit requests from same API
+// const limiter = rateLimit({
+//   max: 100,
+//   windowMs: 60 * 60 * 1000,
+//   message: 'Too many requests from this Ip, please try again in an hour!',
+// });
+// app.use('/api', limiter);
 
 // these middlewares we want to apply for all of the routes
 app.use(express.json()); // middleware (middle of the request and the response
@@ -32,6 +43,14 @@ app.use((req, res, next) => {
 // 3) ROUTES (this middlewares we want to apply the tourRouter and userRouter )
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
+app.use('/api/v1/reviews', reviewRouter);
+app.all('*', (req, res, next) => {
+  next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
+});
+
+module.exports = app;
+
+// app.use(globalErrorHandler);
 
 // app.get('/1', (req, res) => {
 //   // use status cpde  example 200for okay
@@ -84,5 +103,3 @@ app.use('/api/v1/users', userRouter);
 //   .get(getUser)
 //   .patch(updateUser)
 //   .delete(deleteUser);
-
-module.exports = app;
